@@ -1,0 +1,52 @@
+#
+# Copyright (C) 2017 Michael "Z" Goddard
+#
+# This is free software, dual licensed under the MIT License and GNU General
+# Public License v2.
+# See /LICENSE-MIT and /LICENSE-GPL2 for more information.
+#
+
+include $(TOPDIR)/rules.mk
+include $(INCLUDE_DIR)/kernel.mk
+
+PKG_NAME:=tesseldev
+PKG_VERSION:=0.1
+PKG_RELEASE:=1
+
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/mzgoddard/tesseldev.git
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE_VERSION:=c9c5e2589582e4350dca0806abd1e68d0b2374e7
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
+
+include $(INCLUDE_DIR)/package.mk
+
+define KernelPackage/tessel-dev
+  TITLE:=Tessel character drivers to communicate over SPI with the MCU
+  FILES:=$(PKG_BUILD_DIR)/tesseldev.ko
+  AUTOLOAD:=$(call AutoLoad,99,tesseldev,1)
+  KCONFIG:=
+endef
+
+define Package/tesseldev/description
+	This is a replacement for spidev to communicate specifically with Tessel 2's
+	MCU
+endef
+
+MAKE_OPTS:= \
+	ARCH="$(LINUX_KARCH)" \
+	CROSS_COMPILE="$(TARGET_CROSS)" \
+	SUBDIRS="$(PKG_BUILD_DIR)"
+
+define Build/Prepare
+	mkdir -p $(PKG_BUILD_DIR)
+	$(CP) ./src/* $(PKG_BUILD_DIR)/
+endef
+
+define Build/Compile
+	$(MAKE) -C "$(LINUX_DIR)" \
+		$(MAKE_OPTS) \
+		modules
+endef
+
+$(eval $(call KernelPackage,tesseldev))
