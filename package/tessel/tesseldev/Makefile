@@ -21,7 +21,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/tessel-dev
+define KernelPackage/tesseldev
   TITLE:=Tessel character drivers to communicate over SPI with the MCU
   FILES:=$(PKG_BUILD_DIR)/tesseldev.ko
   AUTOLOAD:=$(call AutoLoad,99,tesseldev,1)
